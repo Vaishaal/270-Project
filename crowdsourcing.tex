@@ -19,15 +19,14 @@ $$Pr(z_{ij} = X | y_{j} = X)Pr(z_{hj} = X | y_{j} = X) = Pr(z_{ij}z_{hj} | y_{j}
 
 Where $i \neq h$.
 
-Though this assumption may not hold for all instances of the labelling problem, it greatly simplifies our solution. We also assume that the vendors are more likely to get a sample correct than incorrect.
+Though this assumption may not hold for all instances of the labelling problem, it greatly simplifies our solution. We also assume that the vendors are more likely to get a sample correct than incorrect. We also assume every labeler labels every datapoint once.
 
 Finally we assume each worker is associated with a $2 \times 2$ confusion matrix. Where $(l,c)$-th entry represents $P(\text{Worker Label} = l| \text{True Label} = c)$. We will denote the confusion matrix for worker $j$ as  $C_{j}$.
 
 Now what we want is to estimate $y_{i}$ for all $i \in \left\{0,1....N\right\}$. And estimate $C_{j}$ for all $j \in \left\{0,1....M\right\}$. We would also like to estimate $W_{0}$ and $W_{1}$
 
-
-
-\subsection{Skene Estimator}
+\subsection{Dawid-Skene Estimator}
+The Dawid-Skene estimator attempts to solve:
 
 \subsection{Expectation Maximization Algorithm}
 \subsubsection{Analysis}
