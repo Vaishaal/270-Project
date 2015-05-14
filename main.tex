@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+
+\setlength\parindent{0pt}
+\title{270 Project}
+\author{Achal Dave, Vaishaal Shankar}
+\date
+
+
+\begin{document}
+
+\maketitle
+\tableofcontents 
+\clearpage
+
+\section{Introduction}
+This survey focuses on spectral methods applied to machine learning, specifically their use in problems related to large datasets. Spectral methods exploit the abundance of prior work in linear algebra to solve solve various classes of problems. Recent advances in the efficiency of randomized linear algebra algorithms makes spectral methods increasingly attractive particularly when dealing with problems with large weakly structured data sets. Specifically we will be looking at spectral clustering and recent work on spectral methods for crowd labelling.
+
+\section{Spectral Clustering}
+	Spectral clustering is a crucial algorithm for learning on large data sources. We will analyze Ng et al's \cite{ng2002spectral} spectral clustering paper from NIPS 2001, which proposes a concise algorithm and provides a theoretical backing for its choices. This paper proposes reducing the problem to regular clustering in the eigenvector space of the Laplacian matrix of the data, provides theoretical bounds relating the clusters in this space to clusters in the data space, and shows initial experimental results using this algorithm.
+    The algorithm (referred to as NJW) is as follows:
+    \begin{enumerate}
+    \item 
+    \end{enumerate}
+	
+	However, Ng et al. do not touch upon the computational complexity of their method. Although a number of papers since then attempted to improve the complexity, we focus on a recent paper by Gittens et al.\cite{gittens2013approximate}, which proposes an approximate algorithm that is both relatively easy to implement, and provides theoretical bounds on its accuracy. We will analyze the algorithm that Gittens proposes, which ultimately relies on a randomized subiteration process. 
+
+
+\newpage
+
+\section{Spectral Crowdsourcing} 
+    Many machine learning algorithms rely on having accurate ground truth for relatively complicated data sets. These ``ground truth" labels are usually delegated to humans on some sort of system like Amazon's Mechanical Turk. Unfortunately due to the circular nature of the problem there is no way to verify the accuracy of these labels. Much of the previous work in this field revolved around the David-Skene Estimator \cite{dawid1979maximum}. The Dawid-Skene estimator has been widely used for inferring the true labels from the noisy labels provided by non-expert crowdsourcing workers. However, since the estimator maximizes a non-convex log-likelihood function, it is hard to theoretically justify its performance. Moreover the iterative nature of EM gives no bound on the speed of convergence.  Recent work by Zhang et al. \cite{zhang2014spectral} presents a new spectral method for ground truth label generation by using spectral methods to estimate the confusion matrix for the labelers, and provides a good theoretical bound on the rate of convergence. In fact in the papers results section, it claims it reaches very close to a global optimum in one iterate of EM. For the sake of simplicity we will consider only the two class classification case, the generalization to k classes is quite natural.
+
+\subsection{Problem Statement}
+Consider an experiment where $M$ labelers assign labels to $N$ samples from the set: $\left\{[0,1],[1,0]\right\}$ (negative,positive). I will refer to these vectors as $N$ and $P$ respectively. Note though our labels represent scalars we represent them by the standard basis vectors of $\mathcal{R}^{2}$. This will simplify our later analysis. We will denote labeler $m$'s label of sample $n$ as $z_{mn}$. The true label $y_{i}$ of item
+$i \in \left\{0,1....N\right\} $ is assumed to be sampled from a probability
+distribution $Pr(y_{i} = 0)$ = $w_{0}$ where $w_{0}$ is the prior on label 0.  We define $W$ to be a diagonal $2 \times 2$ matrix: 
+\begin{align}
+\begin{bmatrix}
+w_{0} & 0 \\
+0     & w_{1}
+\end{bmatrix}
+\end{align}
+
+Naturally $w_{0} + w_{1} = 1$. \\
+
+We also assume that each of the labelers are conditionally independent given the true label. More formally:
+
+$$Pr(z_{ij} = X | y_{j} = X)Pr(z_{hj} = X | y_{j} = X) = Pr(z_{ij}z_{hj} | y_{j} = X)$$
+
+Where $i \neq h$.
+
+Though this assumption may not hold for all instances of the labelling problem, it greatly simplifies our solution. We also assume that the vendors are more likely to get a sample correct than incorrect. We also assume every labeler labels every datapoint once.
+
+Finally we assume each worker is associated with a $2 \times 2$ confusion matrix. Where $(l,c)$-th entry represents $P(\text{Worker Label} = l| \text{True Label} = c)$. We will denote the confusion matrix for worker $j$ as  $C_{j}$. 
+
+Now what we want is to estimate $y_{i}$ for all $i \in \left\{0,1....N\right\}$. And estimate $C_{j}$ for all $j \in \left\{0,1....M\right\}$. We would also like to estimate $W_{0}$ and $W_{1}$
+
+
+\subsection{Dawid-Skene Estimator}
+The Dawid-Skene estimator attempts to solve:
+
+$$ \max_{w_{0
+
+\subsection{Expectation Maximization Algorithm}
+\subsubsection{Analysis}
+
+\subsection{Spectral Initialization}
+
+
+
+
+
+
+
+
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{ref}
+
+\end{document}
