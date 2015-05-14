@@ -1,0 +1,25 @@
+\section{Spectral Clustering}
+
+    Spectral clustering is a crucial algorithm for learning on large data
+    sources. We will analyze Ng et al's \cite{ng2002spectral} spectral
+    clustering paper from NIPS 2001, which proposes a concise algorithm and
+    provides a theoretical backing for its choices. This paper proposes
+    reducing the problem to regular clustering in the eigenvector space of the
+    Laplacian matrix of the data, provides theoretical bounds relating the
+    clusters in this space to clusters in the data space, and shows initial
+    experimental results using this algorithm.
+
+    \subsection{The Clustering Problem}
+    Spectral clustering aims to solve the problem of grouping large amounts of
+    high dimensional data into a small number of clusters. More precisely,
+    the input to most clustering algorithms is as follows:
+    \begin{align*}
+    X &: \begin{pmatrix}x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix} \in \R^{n \times k} \\
+    k &: \text{Number of clusters}
+    \end{align*}
+
+    \begin{enumerate}
+    \item
+    \end{enumerate}
+
+    However, Ng et al. do not touch upon the computational complexity of their method. Although a number of papers since then attempted to improve the complexity, we focus on a recent paper by Gittens et al.\cite{gittens2013approximate}, which proposes an approximate algorithm that is both relatively easy to implement, and provides theoretical bounds on its accuracy. We will analyze the algorithm that Gittens proposes, which ultimately relies on a randomized subiteration process.

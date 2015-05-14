@@ -1,13 +1,21 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage[margin=1in]{geometry}
-\usepackage{amsmath}
+\usepackage{amsmath,mathtools,amssymb}
 
 \setlength\parindent{0pt}
 \title{270 Project}
 \author{Achal Dave, Vaishaal Shankar}
-\date
+\date{}
 
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}%
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}%
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\st}{\text{s.t.}}
+\newcommand{\Var}{\mathrm{Var}}
 
 \begin{document}
 
@@ -15,18 +23,12 @@
 \tableofcontents
 \clearpage
 
+
 \section{Introduction}
 This survey focuses on spectral methods applied to machine learning, specifically their use in problems related to large datasets. Spectral methods exploit the abundance of prior work in linear algebra to solve solve various classes of problems. Recent advances in the efficiency of randomized linear algebra algorithms makes spectral methods increasingly attractive particularly when dealing with problems with large weakly structured data sets. Specifically we will be looking at spectral clustering and recent work on spectral methods for crowd labelling.
 
 \section{Spectral Clustering}
-    Spectral clustering is a crucial algorithm for learning on large data sources. We will analyze Ng et al's \cite{ng2002spectral} spectral clustering paper from NIPS 2001, which proposes a concise algorithm and provides a theoretical backing for its choices. This paper proposes reducing the problem to regular clustering in the eigenvector space of the Laplacian matrix of the data, provides theoretical bounds relating the clusters in this space to clusters in the data space, and shows initial experimental results using this algorithm.
-    The algorithm (referred to as NJW) is as follows:
-    \begin{enumerate}
-    \item
-    \end{enumerate}
-
-    However, Ng et al. do not touch upon the computational complexity of their method. Although a number of papers since then attempted to improve the complexity, we focus on a recent paper by Gittens et al.\cite{gittens2013approximate}, which proposes an approximate algorithm that is both relatively easy to implement, and provides theoretical bounds on its accuracy. We will analyze the algorithm that Gittens proposes, which ultimately relies on a randomized subiteration process.
-
+\input{clustering}
 
 \newpage
 
@@ -62,21 +64,10 @@ Now what we want is to estimate $y_{i}$ for all $i \in \left\{0,1....N\right\}$.
 
 \subsection{Skene Estimator}
 
-
 \subsection{Expectation Maximization Algorithm}
 \subsubsection{Analysis}
 
 \subsection{Spectral Initialization}
-
-
-
-
-
-
-
-
-
-
 
 \bibliographystyle{unsrt}
 \bibliography{ref}
