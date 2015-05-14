@@ -1,4 +1,4 @@
-all: final.pdf
+all: survey.pdf
 
 %.pdf: %.tex
 	pdflatex $<
