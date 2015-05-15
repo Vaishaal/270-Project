@@ -8,17 +8,83 @@ the data space, and shows initial experimental results using this algorithm.
 
 \subsection{The Clustering Problem}
 Spectral clustering aims to solve the problem of grouping large amounts of high
-dimensional data into a small number of clusters. More precisely, the input to
-most clustering algorithms is as follows:
+dimensional data into a small number of clusters. We desire a clustering
+algorithm that takes as input the following:
 
 \begin{align*}
-X &: \begin{pmatrix}x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix} \in \R^{n \times k} \\
-    k &: \text{Number of clusters}
+\textbf{Ideal input: } \label{clustering:idealinput} \\
+X &: \begin{pmatrix}
+        x_1 \\
+        x_2 \\
+        \vdots \\
+        x_n
+     \end{pmatrix} \in \R^{n \times k} \\
+s(x_i, x_j) &: \text{A real valued similarity.}
 \end{align*}
 
+and output an assignment of points to clusters as follows:
+
+\begin{align*}
+    \textbf{Ideal output: } \\
+C &: \{ C_{i_1}, C_{i_2}, \cdots, C_{i_n} \} ; i \in \{1,...,k\} \\
+k &: \text{Number of clusters}
+\end{align*}
+
+Unfortunately, the problem as described above is slightly ill-posed.
+After all, we have not specified what kind of cluster assignments do we desire.
+An algorithm which simply assigns a unique cluster index to each data point is
+a valid solution, as is one that assigns every datapoint to the same cluster.
+Intuitively, if we have no further information about the data points, we want
+clusters to be \textit{tight} and \textit{separated}. This intuition can be more
+formally described via \textit{internal} cluster evaluation metrics, such as the 
+Davies-Bouldin index \cite{davies1979cluster}.
+
+\subsubsection{Relation to graphs}
+This problem, then, has a neat graph analog, as follows. Let each point $x_i$
+be a node, and let edge weights be equal to the similarities between them, as
+defined by $s(x_i, x_j)$. In this formulation, we desire clusters corresponding
+to components that arise from \textit{sparse} cuts.
+
+\subsection{Preliminaries}
+%
+% 1) Laplacian
+% 2) Eigenvectors of Laplacian
+% 3) Matrix Perturbation Theory
+
+\subsection{Ng, Jordan, Weiss (NJW) Algorithm}
+The Ng, Jordan, Weiss algorithm presents a spectral approach to clustering. It
+takes as input $X$ as defined in the ideal input, and the following
+\begin{align*}
+    k &: \text{The number of clusters expected} \\
+    \sigma &: \text{A scaling parameter for the similarity function.}
+\end{align*}
+
+The similarity metric is pre-defined as follows:
+\begin{align*}
+    s(x_i, x_j) = \exp\{\frac{\norm{x_i - x_j}^2}{2\sigma^2}\}
+\end{align*}
+
+Note that this algorithm requires advanced knowledge of the number of clusters,
+an issue \achal{WC} that we will attempt to alleviate later.
+
+The algorithm is as follows:
 \begin{enumerate}
-    \item
+    \item Construct the matrix $A$ such that $A_{ij} = \begin{cases}s(x_i, x_j) &\;\text{ if } i \neq j \\
+                                                                    0           &\;\text{ otherwise}\end{cases}$
+    \item Let $D$ be $diag(A \vec{1})$. Let $\cA = D^{-1/2} A D^{-1/2}$.
+    \item Find the $k$ largest eigenvectors of $\cA: v_1,...,v_k$, and form the
+            matrix $V = [v_1, ..., v_k]$.
+    \item Form the matrix $Y$ by normalizing the rows of $X$ to have unit length:
+            $Y_{ij} = X_{ij} / \sum_j X_{ij}$.
+    \item Treat $Y$ as a data matrix, so that $Y = [y_1, ..., y_n]^T$, and
+        cluster these data points to obtain the cluster assignments for $y_i$:
+        $C'_{i_1}, C'_{i_2}, ..., C'_{i_n}$.
+    \item Let $C_{i_1} = C'_{i_1}$; that is, assign $x_i, x_j$ to the same cluster
+        iff $y_i, y_j$ were assigned to the same cluster.
 \end{enumerate}
+
+\subsection{Proof sketch}
+
 
 However, Ng et al. do not touch upon the computational complexity of their
 method. Although a number of papers since then attempted to improve the
