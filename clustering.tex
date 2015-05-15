@@ -84,7 +84,7 @@ The algorithm is as follows:
         iff $y_i, y_j$ were assigned to the same cluster.
 \end{enumerate}
 
-\subsection{Intuition}
+\subsubsection{Intuition}
 \cite{ng2002spectral} provides a detailed intuition for this algorithm in their paper,
 along with illustrative graphics. Here, we roughly follow their proof in an
 abbreviated manner.
@@ -102,7 +102,7 @@ vertices in $S_i$, and zero elsewhere, and has eigenvalue $1$. Thus, if there
 are $k$ independent clusters, there must be exactly $k$ eigenvectors that are
 mutually orthogonal.
 
-\subsection{Proof sketch}
+\subsubsection{Assumptions}
 Of course, if our adjacency matrix $\cA$ was ideal, clustering would not be
 particularly interesting. A number of issues prevent us from obtaining this
 ideal. Perhaps most obviously, our similarity metric is never exactly $0$, but
@@ -153,13 +153,26 @@ that is, one expected cluster is actually two independent clusters in disguise,
 in which case our $k$ must have been poorly chosen.
 
 The next few assumptions are more straight forward, and rely on the intra and
-inter cluster similarities in our data.
-\begin{enumerate}
-\item
+inter cluster similarities in our data. \achal{Add $d_j$ definitions etc.}
+
+\textbf{Assumption 2}
+    \achal{TODO (notation, etc.)}
     There exists an $\epsilon_1 > 0$ such that
-    \achal{Fix notation}
     \[ \sum_{j \in C_{i_1}} \sum_{j \in C_{i_2}} \frac{\cA_{jk}^2}{\hat{d_j} \hat{d_k}} \leq \epsilon_1 \]
-\end{enumerate}
+
+\textbf{Assumption 3}
+    \achal{TODO (notation, etc.)}
+    There exists an $\epsilon_2 > 0$ such that
+    \[ \frac{\sum_{k : k \not\in C_i} A_{jk}}{\hat{d_j}} \leq
+            \epsilon_2 \left(\sum_{k, l \in C_i} \frac{\cA_{kl}^2}{\hat{d_k}\hat{d_l}}\right)^2 \]
+
+\textbf{Assumption 4}
+    \achal{TODO (notation, etc.)}
+    There is a constant $C > 0$ such that
+\[ \hat{d}_j^{(i)} \geq \frac{\sum_{k=1}^{n_i} \hat{d_k}^{(i)}}{Cn_i} \]
+
+
+\subsubsection{Proof sketch}
 
 Surprisingly, we are unable to find any published proofs of this Theorem, nor
 attempts at proving it. The full derivation would rely heavily on matrix
