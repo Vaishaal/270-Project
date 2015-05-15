@@ -8,6 +8,7 @@ SRC = $(wildcard *.tex)
 
 clean:
 	$(RM) *.pdf
+	$(RM) *.{aux,log,out,toc,fdb_latexmk,fls}
 
 
 
