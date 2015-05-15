@@ -187,21 +187,34 @@ $r_1, ..., r_k$ so that $V$'s rows satisfy
 
 Surprisingly, we are unable to find any published proofs of this Theorem, nor
 any attempts at proving it. The full derivation would rely heavily on matrix
-perturbation theory, which is outside the scope of this paper: while it is
-somewhat related to spectral theory, we are not particularly well-versed in the
-literature in matrix perturbation theory. However, we provide an initial sketch
-and important results in perturbation theory that would lead to the proof of
-this theorem.
+perturbation theory, which is outside the scope of this paper. However, we
+provide an initial sketch and important results in perturbation theory that
+would lead to the proof of this theorem.
 
-First, we discuss the Davis Kahan theorem as it applies to $\cA$ and $\hat{\cA}$.
+First, we discuss the Davis Kahan theorem as it applies to $\cA$ and $\hat{\cA}$,
+with help from \cite{von2007tutorial}.
 
 \textlcsc{Davis-Kahan Theorem} (modified for our purposes):
-$\hat{A}, E$ be symmetric matrices, and let $\norm{\cdot}$ be the two-norm for
-matrices. Consider $A = \hat{A} + E$, a perturbed version of $\hat{A}$. Let
+$\hat{\cA}, E$ be symmetric matrices, and let $\norm{\cdot}$ be the two-norm for
+matrices. Consider $\cA = \hat{\cA} + E$, a perturbed version of $\hat{\cA}$. Let
 $\delta = \abs{\lambda_k - \lambda_{k+1}}$ (where $\lambda_k$ is the $k$th
-eigenvalue of $A$), $V_1$ the eigenspace spanned by the $k$ largest eigenvectors
-of $A$, and $\hat{V_1}$ the corresponding space for $\hat{A}$. Then,
-\[ d(V_1, \hat{V_1}) = \norm{\sin \Theta(V_1, \hat{V_1})} \leq \frac{\norm{H}}{\delta} \]
+eigenvalue of $\cA$), $V_1$ the eigenspace spanned by the $k$ largest eigenvectors
+of $\cA$, and $\hat{V_1}$ the corresponding space for $\hat{\cA}$. Then,
+\[ d(V_1, \hat{V_1}) = \norm{\sin \Theta(V_1, \hat{V_1})} \leq \frac{\norm{E}}{\delta} \]
+
+Note that the distance between two subspaces here is defined as the angle
+between them. We appeal to \achal{Cite: lecture 6 EE381V} to relate this to
+a more direct distance metric, and see that
+
+\[ d(V_1, \hat{V_1}) \leq \min_{R} \norm{V_1 - \hat{V_1}R}_2 \leq \sqrt{2} d(V_1, \hat{V_1}) \]
+
+where $R$ is an orthogonal matrix. Intuitively, the above bounds the distance
+of $V_1$ from some rotation of $\hat{V_1}$, leading to the following bound
+\[ \norm{V_1 - \hat{V_1}R}_2 \leq \sqrt{2} \frac{\norm{E}}{\delta} \]
+
+This provides a matrix perturbation approach towards proving the NJW theorem,
+bounding the distance between the eigenvectors of $\cA$ and some rotation of
+the eigenvectors of $\hat{\cA}$.
 
 ---
 
