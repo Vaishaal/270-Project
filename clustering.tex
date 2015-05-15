@@ -260,4 +260,28 @@ algorithm; for example, the very proof of the NJW algorithms' effectiveness
 relies on the fact that $k$ is selected accurately (as otherwise, the eigengap
 may be infinitesimally small!).
 
-\subsection{Parallelism}
+Zelnik-Manor and Perona \cite{zelnik2004self} provide an empirically (but not
+theoretically) validated selection for $\sigma_i = d(x_i, x_{i_K})$ where
+$x_{i_K}$ is the $K$th closest neighbor to $x_i$. This allows a scaling
+parameter that is \textit{local} to each data point; although this slightly
+increases computation cost, it allows data in dense regions to have a
+similarity that falls off quickly, while sparse data is brought closer
+together. $\cA$ is modified so that \[ \cA_{ij : j \neq i} =
+\exp{\left(\frac{-d^2(x_i,x_j)}{\sigma_i \sigma_j}\right)} \]
+
+The question of determining the number of clusters can be approached in a number
+of ways. Since we originally were looking for a large eigengap, we can simply
+choose the $k$ that maximizes $\abs{\lambda_k - \lambda_{k+1}}$. However,
+\cite{zelnik2004self} shows empirically that the value of this eigengap is not
+particularly useful; intuitively, the eigengap relies on the structure of each
+cluster component, which must be very well clustered for the eigengap to be
+large at $k$. As we drift towards large $k$, our assumptions on the structure
+of these components become weaker, and the eigengap is not easily bounded.
+Instead, \cite{zelnik2004self} uses the key insight that for an optimal $k$,
+there exists a set of $k$ close to orthogonal eigenvectors that correspond to
+the eigenvectors of each component. If $k$ is too large, these eigenvectors
+will start exhibiting dependencies. This naturally leads to a criterion for
+selecting $k$ based on whether or not the eigenvectors of $\cA$ can be rotated
+to match the elementary basis. In particular, Zelnik-Manor and Perona propose
+selecting a $k$ that minimize a cost based on the rotation of the eigenvectors.
+\achal{Actual cost?}
