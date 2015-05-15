@@ -236,12 +236,22 @@ of $\cA$ to construct $C \in \R^{n \times l}$, and forms $W \in \R^{l \times l}$
 as the submatrix of $\cA$ indexed by the $l$ samples. $\cA$ can then be
 approximated by $\tilde{\cA} = C W_r^+ C^T$, where $W_r^+$ is the pseudoinverse
 of the best rank $r$ approximation of $W$. Given this approximation,
-$\cite{choromanska2013fast}$ prove a theorem similar to that of NJW under
+\cite{choromanska2013fast} proves a theorem similar to that of NJW under
 certain conditions, bounding the perturbation of the eigenvectors of
 $\tilde{\cA}$ from $\hat{\cA}$. For the statement and proof of this theorem, we
-refer the reader to $\cite{choromanska2013fast}$.
+refer the reader to \cite{choromanska2013fast}.
 
 \subsubsection{t-nearest neighbors}
+\achal{cite} proposes a simple algorithm for sparsifying the similarity matrix
+$\cA$: for each datapoint, maintain only the similarity to the top $t$ nearest
+neighbors; for the rest, clamp the similarity to $0$. Clearly, this significantly
+reduces the number of non-zero entries in $\cA$. Further, \achal{cite} shows
+empirical improvements in clustering efficacy over the Nystr\"{o}m Method;
+unfortunately, this paper does not provide any theoretical bounds on the
+clustering. In fact, this technique may be particularly tricky to analyze
+theoretically: it is easy to imagine that $t$ depends heavily on the structure
+and size of the dataset in hand, and may easily lead to a number of small
+clusters due to a $t << n$.
 
 \subsection{Selecting $\sigma, k$}
 
