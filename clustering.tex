@@ -40,10 +40,11 @@ formally described via \textit{internal} cluster evaluation metrics, such as the
 Davies-Bouldin index \cite{davies1979cluster}.
 
 \subsubsection{Relation to graphs}
-This problem, then, has a neat graph analog, as follows. Let each point $x_i$
-be a node, and let edge weights be equal to the similarities between them, as
-defined by $s(x_i, x_j)$. In this formulation, we desire clusters corresponding
-to components that arise from \textit{sparse} cuts.
+This problem, then, has a neat graph analog, as follows. Create a graph $G$, and
+let each point $x_i$ be a node, with edge weights be equal to the
+similarities between them, as defined by $s(x_i, x_j)$. In this formulation, we
+desire clusters corresponding to components that arise from \textit{sparse}
+cuts.
 
 \subsection{Preliminaries}
 %
@@ -71,7 +72,7 @@ The algorithm is as follows:
 \begin{enumerate}
     \item Construct the matrix $A$ such that $A_{ij} = \begin{cases}s(x_i, x_j) &\;\text{ if } i \neq j \\
                                                                     0           &\;\text{ otherwise}\end{cases}$
-    \item Let $D$ be $diag(A \vec{1})$. Let $\cA = D^{-1/2} A D^{-1/2}$.
+    \item Let $D$ be $diag(A \vec{\mathbf{1}})$. Let $\cA = D^{-1/2} A D^{-1/2}$.
     \item Find the $k$ largest eigenvectors of $\cA: v_1,...,v_k$, and form the
             matrix $V = [v_1, ..., v_k]$.
     \item Form the matrix $Y$ by normalizing the rows of $X$ to have unit length:
@@ -83,8 +84,78 @@ The algorithm is as follows:
         iff $y_i, y_j$ were assigned to the same cluster.
 \end{enumerate}
 
-\subsection{Proof sketch}
+\subsection{Intuition}
+\cite{ng2002spectral} provides a detailed intuition for this algorithm in their paper,
+along with illustrative graphics. Here, we roughly follow their proof in an
+abbreviated manner.
 
+First, note that if we view our data as a graph $G$, $\cA$ is the normalized
+adjacency, and $\cA = I - \cL$, where $\cL$ is the normalized Laplacian of $G$.
+Thus, the eigenvectors of $\cA$ are the same as that of the Laplacian, and the
+eigenvalues of $\cA$ are equal to the negative of the eigenvalues of $\cL$ plus
+1. Now, as in \cite{ng2002spectral}, consider the ideal input data, where a
+datapoint has non-zero similarity only to other datapoints in its cluster, and
+there are exactly $k$ clusters. If we construct the corresponding graph $G$, it
+must have exactly $k$ disjoint components. We know that for a connected
+component $i$ with vertices $S_i$, the largest eigenvector $v_i$ is $1$ for
+vertices in $S_i$, and zero elsewhere, and has eigenvalue $1$. Thus, if there
+are $k$ independent clusters, there must be exactly $k$ eigenvectors that are
+mutually orthogonal.
+
+\subsection{Proof sketch}
+Of course, if our adjacency matrix $\cA$ was ideal, clustering would not be
+particularly interesting. A number of issues prevent us from obtaining this
+ideal. Perhaps most obviously, our similarity metric is never exactly $0$, but
+other issues arise as well: our data may have noise, whether inherent or due
+to measurement, leading to erroneous similarities. How does this method perform
+in the presence of such less-than-ideal data, then?
+
+\cite{ng2002spectral} assumes that there is, in fact, a true set of $k$ clusters
+which gives rise to $X$, and further that there is an ideal $\hat{\cA}$ of which
+$\cA$ is a perturbation (that is, $\cA = \hat{\cA} + E$, where $E$ is a
+perturbation matrix). Then, we know that there must be $k$ orthogonal
+eigenvectors of $\hat{cA}$.
+
+Ng. et. al provide a number of assumptions about $\cA$, which lead to a bound
+on the distance between the eigenvectors of $\cA$ and the eigenvectors of
+$\hat{\cA}$. We show and discuss these assumptions, and provide an initial
+attempt at proving a theorem that relates the perturbation of $\cA$ to the
+distance between the eigenvectors of $\cA$ and $\hat{\cA}$. We first discuss
+these assumptions and provide some motivation for them.
+
+Let $\lambda_i$ refer to the $i$th eigenvalue of $\cA$. Let $\hat{\lambda_i}$
+be the $i$th eigenvalue of $\hat{\cA}$. Finally, let $\hat{\lambda}^{(j)}_i$
+refer to the $i$th eigenvalue of the $j$th component in $\hat{\cA}$. Notice that
+the $\hat{\lambda_i}$ are the union of $\hat{\lambda}^{(j)}_i$.
+
+Before we express Assumption 1, we provide some motivation. We would like
+the eigenspace of $\hat{\cA}$ to be robust to perturbations to $\hat{\cA}$. As
+it turns out, results from Matrix Perturbation Theory provide us with a relation
+between these two. The Davis-Kahan theorem, discussed later, shows that the
+larger the \textit{eigengap} between $\lambda_i$ and $\lambda_{i+1}$ (that is,
+$\abs{\lambda_{i+1} - \lambda_i}$), the more robust the eigenspace of the top
+$i$ eigenvectors is to perturbations in the matrix. With this intuition, we
+make the following assumption:
+
+\textbf{Assumption 1} There exists $\delta > 0$ such that
+$\hat{\lambda_{k+1}} \leq 1 - \delta$.
+
+We know that $\hat{\lambda_k} = \hat{\lambda^{(j)}_1}$ for some $j$, as in the
+ideal matrix, the $k$ components must each have a unique largest eigenvalue of
+$1$. Then, $\hat{\lambda_{k+1}} = \max_j \hat{\lambda^{(j)}_2}$, and this
+assumption is equivalent to the following:
+\[ \exists \delta, \lambda_k - \lambda_{k+1} = 1 - \max_j \hat{\lambda^{(j)}_2} \leq \delta \]
+
+
+Surprisingly, we are unable to find any published proofs of this Theorem, nor
+attempts at proving it. The full derivation would rely heavily on matrix
+perturbation theory, which is outside the scope of this paper; while it is
+related to spectral theory, we are not particularly well-versed in the
+literature in matrix perturbation theory.
+
+
+
+---
 
 However, Ng et al. do not touch upon the computational complexity of their
 method. Although a number of papers since then attempted to improve the
