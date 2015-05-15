@@ -1,0 +1,15 @@
+% for toggles
+\usepackage{etoolbox}
+\usepackage[usenames]{color}
+\usepackage[usenames, dvipsnames]{xcolor}
+
+\newtoggle{comments}
+% \togglefalse{comments}
+\toggletrue{comments}
+\iftoggle{comments} {
+    \newcommand {\achal}[1]{{\color{Orange}\bf{(AD: #1)}\normalfont}}
+    \newcommand {\vaishaal}[1]{{\color{Blue}\bf{(VS: #1)}\normalfont}}
+}{
+    \newcommand {\achal}[1]{}
+    \newcommand {\vaishaal}[1]{}
+}
