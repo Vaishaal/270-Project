@@ -9,7 +9,7 @@ Consider an experiment where $M$ labelers assign labels to $N$ samples from the 
 \item
 The true label $y_{i}$ of item
 $i \in \left\{0,1....N\right\} $ is assumed to be sampled from a probability
-distribution $Pr(y_{i} = 0)$ = $w_{0}$ where $w_{0}$ is the prior on label 0.
+distribution $p(y_{i} = 0)$ = $w_{0}$ where $w_{0}$ is the prior on label 0.
 
 We define $W$ to be a diagonal $2 \times 2$ matrix:
 \begin{align}
@@ -24,7 +24,7 @@ Naturally $w_{0} + w_{1} = 1$. \\
 \item
 Asssume that each of the labelers are conditionally independent given the true label. More formally:
 
-$$Pr(z_{ij} = X | y_{j} = X)Pr(z_{hj} = X | y_{j} = X) = Pr(z_{ij}z_{hj} | y_{j} = X)$$
+$$p(z_{ij} = X | y_{j} = X)p(z_{hj} = X | y_{j} = X) = p(z_{ij}z_{hj} | y_{j} = X)$$
 
 Where $i \neq h$.
 
@@ -44,7 +44,7 @@ Let $\theta = (C_{0}...C_{M},w_{0},w_{1})$ be the parameters of our model.
 We can define the likelihood of the data $P(z,y| \theta)$ as:
 
 \begin{equation}  \label{eq:L}
-\mathcal{L}(\theta) =
+\mathcal{L}_{d}(\theta) =
 \displaystyle\prod\limits_{n=0}^{N} \displaystyle\prod\limits_{c=0}^{1}
 \Big (w_{l} \displaystyle\prod\limits_{m=0}^{M} \displaystyle\prod\limits_{l=0}^{1} (C_{m}[l,c])^{z_{mn}[l]} \Big )^{y_{n}[c]}
 \end{equation}
@@ -53,7 +53,7 @@ This can be easily verified using our above assumptions
 We want: \\
 
 \begin{equation} \label{eq:maxL}
-\argmax_{\theta} \mathcal{L}(\theta)
+\argmax_{\theta} \mathcal{L}_{d}(\theta)
 \end{equation}
 
 Unfortunately we don't know $y_{n}$ so we can't directly solve this optimization problem.
@@ -64,10 +64,7 @@ The intuition is quite simple. There two unknown quantities of interest: $y$ and
 Given one the other is computable in some manner. So we will hold one of the two nknowns constant,
 and compute the other. We will then hold the other unknown constant and repeat until convergence.
 
-This algorithm is called the Expectation Maximization algorithm.
-
-
-
+This algorithm is called the Expectation Maximization (EM) algorithm.
 
 \subsection{Expectation Maximization Algorithm}
 
@@ -95,5 +92,168 @@ Next we solve
     \item Repeat steps 2 and 3 until convergence
 \end{enumerate}
 
+As it turns out this algorithm is not only simple but has some nice theoretical guarentees.
+
+\subsubsection{Analysis of EM}
+Much of this analysis was borrowed from \cite{murphy2012machine}. The Liklihood of the observed data is:
+
+\begin{equation}  \label{eq:observedL}
+\mathcal{L}_{d}(\theta) =
+\displaystyle\prod\limits_{n=0}^{N} \Big ( \displaystyle\sum\limits_{c=0}^{1}
+w_{l} \displaystyle\prod\limits_{m=0}^{M} \displaystyle\prod\limits_{l=0}^{1} (C_{m}[l,c])^{z_{mn}[l]} \Big )^{y_{n}[c]}
+\end{equation}
+
+Unfortunately this is very hard to optimize which is why we took an expectation of \eqref{eq:L}. This is the function we really can with the data we are given. We will prove that the expectation we took is a lowerbound for this function.
+\begin{theorem}
+\emph{Expected Likelihood is a lower bound}
+\label{EMlower}
+$$ \mathcal{L}_{d}(\theta) \geq E[\mathcal{L}_{d}(\theta)]$$
+\begin{proof}
+
+Let $q(y_{i})$ be the (unknown) distribution over $y_{i}$.
+
+For simplicity's sake we will make the following defintion:
+
+\begin{equation} \label{eq:przyn}
+p(z,y_{n}|\theta) :=
+\Big (w_{l} \displaystyle\prod\limits_{m=0}^{M} \displaystyle\prod\limits_{l=0}^{1} (C_{m}[l,c])^{z_{mn}[l]} \Big )^{y_{n}[c]}
+\end{equation}
+
+
+First we will take a log of of \eqref{eq:observedL}
+
+\begin{equation}
+\log (\theta) = \displaystyle\sum\limits_{n=0}^{N} \log
+\displaystyle\sum\limits_{c=0}^{1}
+\Big (w_{l} \displaystyle\prod\limits_{m=0}^{M} \displaystyle\prod\limits_{l=0}^{1} (C_{m}[l,c])^{z_{mn}[l]} \Big )^{y_{n}[c]}
+\end{equation}
+
+Now plug in \eqref{eq:przyn}
+\begin{equation} \label{eq:lll}
+\log \mathcal{L}_{d}(\theta) = \displaystyle\sum\limits_{n=0}^{N} \log \displaystyle\sum\limits_{y_{n}} p(z,y_{n} | \theta)
+\end{equation}
+
+Now multiply by $\frac{q(y_{n})}{q(y_{n})}$
+
+\begin{equation}
+\log \mathcal{L}_{d}(\theta) = \displaystyle\sum\limits_{n=0}^{N} \log \Big ( \displaystyle\sum\limits_{y_{n}} q(y_{n})\frac{p(z,y_{n} | \theta)}{q(y_{n})} \Big )
+\end{equation}
+
+log is concave By jensens now we get a lower bound
+\begin{equation}\label{eq:jensens}
+\log \mathcal{L}_{d}(\theta) \geq
+\displaystyle\sum\limits_{n=0}^{N} \Big ( \displaystyle\sum\limits_{y_{n}}^{1} q(y_{n})\log \frac{p(z,y_{n} | \theta)}{q(y_{n})} \Big )
+\end{equation}
+
+Now we will simplify and upper bound the inner sum to show that we have a true upper bound.
+\begin{equation}
+\displaystyle\sum\limits_{y_{n}} q(y_{n}) \log \frac{p(z,y_{n}| \theta)}{q_{i}}
+\end{equation}
+
+\begin{equation} 
+\displaystyle\sum\limits_{y_{n}} q(y_{n}) \log \frac{p(y_{i}|z,\theta)p(z| \theta)}{q_{i}} 
+\end{equation}
+
+\begin{equation}
+-\mathcal{KL}(q(y_{n}) || p(y_{n} | z, \theta) + \log p(z| \theta)
+\end{equation}
+
+We want to saturate the lower bound and we can do so by setting $q(y_{n}) = p(y_{n} | x_{i}, \theta)$ This makes our KL divergence 0
+
+and we can now plug in this into the rhs \eqref{eq:jensens} to get
+\begin{equation}
+\displaystyle\sum\limits_{n=0}^{N} \log p(z | \theta)
+\end{equation}
+
+Now do a trivial transformation
+\begin{equation}
+\displaystyle\sum\limits_{n=0}^{N} \log \displaystyle\sum\limits_{y_{n}}  p(z,y_{n} | \theta)
+\end{equation}
+
+Which is exactly equal to \eqref{eq:lll}. Thus the highest our lower bound term can be is exactly our upper bound, thus our lower bound is truly a lower bound.
+
+\qed
+\end{proof}
+
+\end{theorem}
+
+This theorem is nice because it means the expectation function we are maximizing gives us nice lower bound on the true likelihood.
+
+
+I will also state another theorem but not prove it. This can be verified quite easily using the previous theorem
+
+\begin{theorem}
+\emph{EM monotonically increases the observed data log likelihood}
+\end{theorem}
+
+
+Now a big problem with EM is the non convexity of the likelihood function we are optimizing, thus we have little guarentees on whether we are at a local or global maxima. Recent work by Zhang et al, promises a statistically optimal initilization of the EM algorithm for the labeling problem previously mentioned using some spectral methods.
 
 \subsection{Spectral Initialization}
+
+We will try and estimate the confusion matrix for each of the labellers. The guarentee is our estimated confusion matrix should be ``close" to the true confusion matrix, thus when we iterate on EM we will get to the optimum confusion matrices for our labellers.
+
+For the rest of this survey we will us $[n]$ to denote the set $\left\{1......n\right\}$
+
+The high level overview of this as follows:
+
+\begin{enumerate}
+\item Partition workers into three disjoint non empty groups $G_{1},G_{2}, G_{3}$
+\item Use method of moments to estimate average confusion matrices for the three groups.
+\item Use iterated expectation and independence assumption to acquire confusion matrix for each labeller
+\end{enumerate}
+
+Lets dive in.
+
+We will denote confusion matrix column $l$ for labeller $m$ as $\mu_{ml}$
+
+For each group we will calculate the average label for sample $n$, $g \in [3]$:
+
+\begin{equation}
+Z_{gn} = \frac{1}{|G_{g}|} \displaystyle\sum\limits\sum_{i \in G_{g}} z_{in}
+\end{equation}
+
+
+We will denote teh average confusion matrix columns by 
+\begin{equation}
+\mu^{\diamond}_{gl} := \E(Z_{gn} | y_{n} = l) = \frac{1}{G_{g}} \displaystyle\sum\limits_{i \in G_{g}} \mu_{il}
+\end{equation}
+
+Naturally
+\begin{equation}
+C^{\diamond}_{g} := [\mu^{\diamond}_{g0},\mu^{\diamond}_{g1}]
+\end{equation}
+
+We will attempt to solve for $C^{\diamond}_{g}$ from the moments of $Z_{gn}$
+
+Before we do that, we can motivate this approach by showing its easy to acquire $C_{m}$ for all $m \in [M]$  given $C^{\diamond}_{1},C^{\diamond}_{2},C^{\diamond}_{3}$ 
+
+
+\begin{lemma}
+For $g \in [3], i \in G_{g}, a \in [3]\backslash{g}$
+$C_{i} = \E[z_{ij}Z^{T}_{aj}(WC^{T{\diamond}}_{a})^{-1}$
+\begin{proof}
+$$ E[z_{ij}Z^{T}_{aj}] = E[E[z_{ij}Z^{T}_{aj}| y_{j}]] $$
+$$ \displaystyle\sum\limits_{l = 0}^{1} w_{l}\E[z_{ij}Z^{T}_{aj} | y_{j} = l]$$
+
+Exploit conditional independence
+$$ \mathbb{E}[z_{ij}Z^{T}_{aj} | y_{j} = l] =  \E[z_{ij} | y_{j} = l] \E[Z^{T}_{aj} | y_{j} = l] = \mu_{il}(\mu^{\diamond}_{al})^{T} $$
+
+
+$$ \displaystyle\sum\limits_{l = 0}^{1} w_{l}\mu_{il}(\mu^{\diamond}_{al})^{T}$$
+
+$$\mathbb{E}[z_{ij}Z^{T}_{aj} | y_{j} = l] =  C_{i}W(C^{\diamond}_{a})^{T} $$
+
+Take an inverse to get the desired result
+
+$C_{i} = \E[z_{ij}Z^{T}_{aj}(WC^{T\diamond}_{a})]^{-1}$
+
+Note: This assumes $C^{\diamond}_{a}$ is invertible, but since these are only $2 \times 2$ matrices, its not a huge constraint.
+\qed
+\end{proof}
+\end{lemma}
+
+Now we know that we can recover our individual confusion matrices from the averaged ones. Lets go about computing the average confusion matrices. This will hinge on some theorems that I will leave unproven, as they require much computation.
+
+
+
