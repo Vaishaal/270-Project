@@ -2,6 +2,7 @@ all: survey.pdf
 
 SRC = $(wildcard *.tex)
 
+<<<<<<< HEAD
 %.pdf: %.tex
 	latexmk -pdf $<
 	$(RM) *.{aux,log,out,toc,fdb_latexmk,fls}
@@ -11,10 +12,12 @@ clean:
 
 
 
+# Hacky target; added survey.tex just so it's the first one, even though SRC
+# has survey.tex.
 achal: survey.tex $(SRC)
-	pdflatex $<
-	bibtex $(basename $< .tex)
-	pdflatex $<
-	pdflatex $<
+	yes x | pdflatex $< || exit $?
+	yes x | bibtex $(basename $< .tex) || exit $?
+	yes x | pdflatex $< || exit $?
+	yes x | pdflatex $< || exit $?
 
 .PHONY: achal
