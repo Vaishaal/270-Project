@@ -216,12 +216,72 @@ This provides a matrix perturbation approach towards proving the NJW theorem,
 bounding the distance between the eigenvectors of $\cA$ and some rotation of
 the eigenvectors of $\hat{\cA}$.
 
----
+\subsection{Memory constraints}
+Having shown that the algorithm does, in fact, provide some bounds on the
+clustering in a setting with perturbed clusters, we turn to issues with its
+implementation. First, let us consider the memory constraints of constructing
+$\cA$. Notice that $\cA$ is a similarity matrix of $n$ data points, requiring,
+if implemented na\"{i}vely, $n^2$ doubles. With just 10 million data points,
+this could require up to $8 * 10^14$ bytes, or $800 TB$ of memory. A number
+of papers since have focused on reducing this memory storage, either through
+approximation or sparsification of $\cA$. Unfortunately, the usual techniques
+for these tasks require first having a representation of $\cA$ directly, such as,
+for example, the sparsification algorithm in \cite{spielman2011graph}. We
+discuss two particular algorithms, the Nystr\"{o}m method for approximating
+$\cA$, and the t-nearest neighbors for ``sparsification" of $\cA$.
 
-However, Ng et al. do not touch upon the computational complexity of their
-method. Although a number of papers since then attempted to improve the
-complexity, we focus on a recent paper by Gittens et
-al.\cite{gittens2013approximate}, which proposes an approximate algorithm that
-is both relatively easy to implement, and provides theoretical bounds on its
-accuracy. We will analyze the algorithm that Gittens proposes, which ultimately
-relies on a randomized subiteration process.
+\subsubsection{Nystr\"{o}m Method}
+The Nystr\"{o}m method for approximating $\cA$ begins by sampling $l$ rows
+of $\cA$ to construct $C \in \R^{n \times l}$, and forms $W \in \R^{l \times l}$
+as the submatrix of $\cA$ indexed by the $l$ samples. $\cA$ can then be
+approximated by $\tilde{\cA} = C W_r^+ C^T$, where $W_r^+$ is the pseudoinverse
+of the best rank $r$ approximation of $W$. Given this approximation,
+\cite{choromanska2013fast} proves a theorem similar to that of NJW under
+certain conditions, bounding the perturbation of the eigenvectors of
+$\tilde{\cA}$ from $\hat{\cA}$. For the statement and proof of this theorem, we
+refer the reader to \cite{choromanska2013fast}.
+
+\subsubsection{t-nearest neighbors}
+\achal{cite} proposes a simple algorithm for sparsifying the similarity matrix
+$\cA$: for each datapoint, maintain only the similarity to the top $t$ nearest
+neighbors; for the rest, clamp the similarity to $0$. Clearly, this significantly
+reduces the number of non-zero entries in $\cA$. Further, \achal{cite} shows
+empirical improvements in clustering efficacy over the Nystr\"{o}m Method;
+unfortunately, this paper does not provide any theoretical bounds on the
+clustering. In fact, this technique may be particularly tricky to analyze
+theoretically: it is easy to imagine that $t$ depends heavily on the structure
+and size of the dataset in hand, and may easily lead to a number of small
+clusters due to a $t << n$.
+
+\subsection{Selecting $\sigma, k$}
+The algorithm described earlier took as input two crucial parameters: $\sigma$
+and $k$. These parameters can significantly alter the outputs from this
+algorithm; for example, the very proof of the NJW algorithms' effectiveness
+relies on the fact that $k$ is selected accurately (as otherwise, the eigengap
+may be infinitesimally small!).
+
+Zelnik-Manor and Perona \cite{zelnik2004self} provide an empirically (but not
+theoretically) validated selection for $\sigma_i = d(x_i, x_{i_K})$ where
+$x_{i_K}$ is the $K$th closest neighbor to $x_i$. This allows a scaling
+parameter that is \textit{local} to each data point; although this slightly
+increases computation cost, it allows data in dense regions to have a
+similarity that falls off quickly, while sparse data is brought closer
+together. $\cA$ is modified so that \[ \cA_{ij : j \neq i} =
+\exp{\left(\frac{-d^2(x_i,x_j)}{\sigma_i \sigma_j}\right)} \]
+
+The question of determining the number of clusters can be approached in a number
+of ways. Since we originally were looking for a large eigengap, we can simply
+choose the $k$ that maximizes $\abs{\lambda_k - \lambda_{k+1}}$. However,
+\cite{zelnik2004self} shows empirically that the value of this eigengap is not
+particularly useful; intuitively, the eigengap relies on the structure of each
+cluster component, which must be very well clustered for the eigengap to be
+large at $k$. As we drift towards large $k$, our assumptions on the structure
+of these components become weaker, and the eigengap is not easily bounded.
+Instead, \cite{zelnik2004self} uses the key insight that for an optimal $k$,
+there exists a set of $k$ close to orthogonal eigenvectors that correspond to
+the eigenvectors of each component. If $k$ is too large, these eigenvectors
+will start exhibiting dependencies. This naturally leads to a criterion for
+selecting $k$ based on whether or not the eigenvectors of $\cA$ can be rotated
+to match the elementary basis. In particular, Zelnik-Manor and Perona propose
+selecting a $k$ that minimize a cost based on the rotation of the eigenvectors.
+\achal{Actual cost?}
