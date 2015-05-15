@@ -104,6 +104,8 @@ w_{l} \displaystyle\prod\limits_{m=0}^{M} \displaystyle\prod\limits_{l=0}^{1} (C
 \end{equation}
 
 Unfortunately this is very hard to optimize which is why we took an expectation of \eqref{eq:L}. This is the function we really can with the data we are given. We will prove that the expectation we took is a lowerbound for this function.
+
+\newpage
 \begin{theorem}
 \emph{Expected Likelihood is a lower bound}
 \label{EMlower}
@@ -254,6 +256,80 @@ Note: This assumes $C^{\diamond}_{a}$ is invertible, but since these are only $2
 \end{lemma}
 
 Now we know that we can recover our individual confusion matrices from the averaged ones. Lets go about computing the average confusion matrices. This will hinge on some theorems that I will leave unproven, as they require much computation.
+
+\begin{lemma}
+$p(Z_{cj} = i, Z_{bj} = k) = E[Z_{cj} \otimes Z_{bj}]_{ik}$
+$p(Z_{cj} = i, Z_{bj} = k, Z_{aj} = l),  = E[Z_{cj} \otimes Z_{bj} \otimes Z_{aj}]_{ikl}$
+
+Where $E[Z_{cj} \otimes Z_{bj}]$ is a $2 \times 2$ matrix. And $E[Z_{cj} \otimes Z_{bj} \otimes Z_{aj}]$ is a $2 \time 2 \times 2$ tensor. (Here I'm using the term tensor as an n-dimensional generalization of a matrix).
+\end{lemma}
+
+Unfortunatel because the condition probabilities of our groups are not going to be the same, our matrices nor tensors will be symmmetric.
+
+Much of the averaged confusion matrix generation hinges on tensor factorization. Tensor factorization is much more difficult than matrix factorization, and cannot be applied to all tensors. In particular we will need our tensor to be whitened and symmetric. So the following "diagnalizes" our moment matrix.
+
+
+
+
+\begin{theorem}
+Assume that the columns of our confusion matrix are linearly indpendent. Let $(a,b,c)$ be a permutation of $[3]$.
+
+$$Z'_{aj} := \E[Z_{cj} \otimes Z_{bj}](\E[Z_{aj} \times Z_{bj}])^{-1}Z_{aj}$$
+$$Z'_{bj} := \E[Z_{cj} \otimes Z_{aj}](\E[Z_{bj} \times Z_{aj}])^{-1}Z_{bj}$$
+$$M_{2} := \E[Z'_{aj} \otimes  Z'_{bj}]$$
+$$M_{3} := \E[Z'_{aj} \otimes Z'_{bj} \otimes Z'_{cj}]$$
+
+Then,
+$$M_{2} = \displaystyle\sum\limits_{l=1}^{k} w_{l}\mu^{\diamond}_{cl} \otimes \mu^{\diamond}_{cl} $$
+$$M_{3} = \displaystyle\sum\limits_{l=1}^{k} w_{l}\mu^{\diamond}_{cl} \otimes \mu^{\diamond}_{cl} \mu^{\diamond}_{cl} $$
+\end{theorem}
+
+This theorem is extremely powerful for two reasons:
+
+\begin{enumerate} 
+\item The expectations are very easy to compute empirically from our data, so we can easily compute $M_{2}$ and $M_{3}$
+\item We can use all 3 permutations of $[3]$ to generate the moment matrices and tensors for all three of our groups.
+\item Our resulting structures are symmetric so now we can apply a tensor factorization algorithm to recover the columns of $C^{\diamond}_{g}$
+\end{enumerate}
+
+So now that we have the moments for our groups, we can employ a tensor factorization algorithm such as the one discussed in \cite{anandkumar2014tensor} to recover the columns of our confusion matrix, and the corresponding entries of $W$
+
+There is one complication in that the tensor decomposition algorithm only gives us the columns that make up the original matrix but not the order of the columns. But if we make an assumption that all the labellers have a good true positive rate, we can disambiguate this by setting the index of the column to be the index of the column \textit{entry} with the highest value. If there is a collision for an index, we can break the tie by picking the one with the higher value in that slot. Again this process is greatly simplified by the fact that we only have 2 columns in each confusion matrix. 
+
+Finally with our averaged confusion matrices we can acquire the confusion matric for each of the labellers, and we have completed our EM initialization.
+
+Our initialization has a very nice theoretical property in that its close to the true confusion matrix for each labeller. Let us define some metrics so we can make this notion precise:
+
+$$ w_{min} := min(w_{0}, w_{1}) $$
+This will be the smallest portion of true labels. We assume that this value is strictly positive.
+
+$$ \kappa := \min_{g \in [3]} \min_{l \in \left\{0,1\right\}} \min_{j \in \left\{0,1\right\}\backslash l}  \mu^{\diamond}_{gll} - \mu^{\diamond}_{glc}$$
+
+$\kappa$ denotes the smallest gap between diagnol entries and non-diagnol entries in the confusion matrix. The assumption requires that $\kappa$ is strictly positive.
+
+$$D_{KL} := \displaystyle\sum\limits_{i=0} p(i)\log(\frac{p(i)}{q(i)}) $$
+
+$$\bar{D} := \min_{l \neq l'} \frac{1}{m} \displaystyle_{i=1}^{m} \mathcal{D}_{KL}(\mu_{il},\mu_{il'})$$
+
+Let $\sigma_{L}$ be a scalar that is greater than the smallest eigenvalue of our moment matrix (between a and b).
+
+The quantity $\bar{D}$ lower bounds the averaged KL-divergence between two columns If $\bar{D}$ is strictly positive it means that every pair of labels can be distinguished by atleast one subset of wrokers.
+
+
+\begin{theorem}
+For any scalar $\delta > 0$ and any scalar $\epsilon$ satisfying $\epsilon\leq min(\frac{72\kappa}{w_{min}\sigma_{l}, 2})$ if the number of 
+items n satisfies $ n = \Omega\Big ( \frac{(32\log((m + 2){\delta})}{\epsilon^{2}\omega^{2}\sigma_{L}^{13}} \Big ) $
+
+Then the confusion matrices returned by our initialization is bounded as
+
+$$ ||\hat{C_{i}} - C_{i}||_{\infty}  < \epsilon \text{for all} \; i \in  [m] $$
+
+The proof for this theorem is very long, and full of computations, bounding and algebra. It can be found in \cite{zhang2014spectral}
+\end{theorem}
+
+The nice result about this theorem is that we are hurt by the nonconvexity of the EM algorithm less now. Since for a large $n$ we start very close to the actual maxima.
+
+
 
 
 
