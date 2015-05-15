@@ -146,14 +146,26 @@ $1$. Then, $\hat{\lambda_{k+1}} = \max_j \hat{\lambda^{(j)}_2}$, and this
 assumption is equivalent to the following:
 \[ \exists \delta, \lambda_k - \lambda_{k+1} = 1 - \max_j \hat{\lambda^{(j)}_2} \leq \delta \]
 
+To see that this is a reasonable assumption in arbitrary data, notice that if
+$\delta \approx 0$, then for some component $j$, $\lambda^{(j)}_2 \approx 1$,
+which must mean that this component itself can be separated into two components;
+that is, one expected cluster is actually two independent clusters in disguise,
+in which case our $k$ must have been poorly chosen.
+
+The next few assumptions are more straight forward, and rely on the intra and
+inter cluster similarities in our data.
+\begin{enumerate}
+\item
+    There exists an $\epsilon_1 > 0$ such that
+    \achal{Fix notation}
+    \[ \sum_{j \in C_{i_1}} \sum_{j \in C_{i_2}} \frac{\cL_{jk}^2}{\hat{d_j} \hat{d_k}} \leq \epsilon_1 \]
+\end{enumerate}
 
 Surprisingly, we are unable to find any published proofs of this Theorem, nor
 attempts at proving it. The full derivation would rely heavily on matrix
 perturbation theory, which is outside the scope of this paper; while it is
 related to spectral theory, we are not particularly well-versed in the
 literature in matrix perturbation theory.
-
-
 
 ---
 
