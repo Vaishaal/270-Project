@@ -16,3 +16,5 @@ achal: survey.tex $(SRC)
 	bibtex $(basename $< .tex)
 	pdflatex $<
 	pdflatex $<
+
+.PHONY: achal
