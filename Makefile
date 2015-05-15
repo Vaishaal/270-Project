@@ -2,7 +2,6 @@ all: survey.pdf
 
 SRC = $(wildcard *.tex)
 
-<<<<<<< HEAD
 %.pdf: %.tex
 	latexmk -pdf $<
 	$(RM) *.{aux,log,out,toc,fdb_latexmk,fls}
