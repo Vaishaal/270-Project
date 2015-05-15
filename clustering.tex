@@ -254,15 +254,10 @@ and size of the dataset in hand, and may easily lead to a number of small
 clusters due to a $t << n$.
 
 \subsection{Selecting $\sigma, k$}
+The algorithm described earlier took as input two crucial parameters: $\sigma$
+and $k$. These parameters can significantly alter the outputs from this
+algorithm; for example, the very proof of the NJW algorithms' effectiveness
+relies on the fact that $k$ is selected accurately (as otherwise, the eigengap
+may be infinitesimally small!).
 
 \subsection{Parallelism}
-
----
-
-However, Ng et al. do not touch upon the computational complexity of their
-method. Although a number of papers since then attempted to improve the
-complexity, we focus on a recent paper by Gittens et
-al.\cite{gittens2013approximate}, which proposes an approximate algorithm that
-is both relatively easy to implement, and provides theoretical bounds on its
-accuracy. We will analyze the algorithm that Gittens proposes, which ultimately
-relies on a randomized subiteration process.
