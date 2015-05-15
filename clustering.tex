@@ -172,13 +172,36 @@ inter cluster similarities in our data. \achal{Add $d_j$ definitions etc.}
 \[ \hat{d}_j^{(i)} \geq \frac{\sum_{k=1}^{n_i} \hat{d_k}^{(i)}}{Cn_i} \]
 
 
-\subsubsection{Proof sketch}
+\subsubsection{NJW Theorem}
+Using the above assumptions, \cite{ng2002spectral} provides the following
+theorem:
+
+\achal{TODO (notation, etc.)}
+
+\textlcsc{Theorem 1 (NJW Theorem)}: Let Assumptions 1, 2, 3, and 4 hold. Set
+$\epsilon = \sqrt{k(k-1)\epsilon_1 + k \epsilon_2^2}$. If
+$\delta > (2 + \sqrt{2}) \epsilon$, then there exist $k$ orthogonal vectors
+$r_1, ..., r_k$ so that $V$'s rows satisfy
+\[ \frac{1}{n} \sum_{i=1}^k \sum_{j=1}^{n_i} \norm{v_j^{(i)} - r_i}_2^2 \leq
+    4C (4 + 2 \sqrt{k})^2 \frac{\epsilon^2}{(\delta - \sqrt{2}\epsilon)^2} \]
 
 Surprisingly, we are unable to find any published proofs of this Theorem, nor
-attempts at proving it. The full derivation would rely heavily on matrix
-perturbation theory, which is outside the scope of this paper; while it is
-related to spectral theory, we are not particularly well-versed in the
-literature in matrix perturbation theory.
+any attempts at proving it. The full derivation would rely heavily on matrix
+perturbation theory, which is outside the scope of this paper: while it is
+somewhat related to spectral theory, we are not particularly well-versed in the
+literature in matrix perturbation theory. However, we provide an initial sketch
+and important results in perturbation theory that would lead to the proof of
+this theorem.
+
+First, we discuss the Davis Kahan theorem as it applies to $\cA$ and $\hat{\cA}$.
+
+\textlcsc{Davis-Kahan Theorem} (modified for our purposes):
+$\hat{A}, E$ be symmetric matrices, and let $\norm{\cdot}$ be the two-norm for
+matrices. Consider $A = \hat{A} + E$, a perturbed version of $\hat{A}$. Let
+$\delta = \abs{\lambda_k - \lambda_{k+1}}$ (where $\lambda_k$ is the $k$th
+eigenvalue of $A$), $V_1$ the eigenspace spanned by the $k$ largest eigenvectors
+of $A$, and $\hat{V_1}$ the corresponding space for $\hat{A}$. Then,
+\[ d(V_1, \hat{V_1}) = \norm{\sin \Theta(V_1, \hat{V_1})} \leq \frac{\norm{H}}{\delta} \]
 
 ---
 
