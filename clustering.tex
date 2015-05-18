@@ -36,21 +36,15 @@ An algorithm which simply assigns a unique cluster index to each data point is
 a valid solution, as is one that assigns every datapoint to the same cluster.
 Intuitively, if we have no further information about the data points, we want
 clusters to be \textit{tight} and \textit{separated}. This intuition can be more
-formally described via \textit{internal} cluster evaluation metrics, such as the 
+formally described via \textit{internal} cluster evaluation metrics, such as the
 Davies-Bouldin index \cite{davies1979cluster}.
 
 \subsubsection{Relation to graphs}
 This problem, then, has a neat graph analog, as follows. Create a graph $G$, and
-let each point $x_i$ be a node, with edge weights be equal to the
+let each point $x_i$ be a node, with edge weights equal to the
 similarities between them, as defined by $s(x_i, x_j)$. In this formulation, we
 desire clusters corresponding to components that arise from \textit{sparse}
 cuts.
-
-\subsection{Preliminaries}
-%
-% 1) Laplacian
-% 2) Eigenvectors of Laplacian
-% 3) Matrix Perturbation Theory
 
 \subsection{Ng, Jordan, Weiss (NJW) Algorithm}
 The Ng, Jordan, Weiss algorithm presents a spectral approach to clustering. It
