@@ -1,14 +1,13 @@
-    Many machine learning algorithms rely on having accurate ground truth for relatively complicated data sets. These ``ground truth" labels are usually delegated to humans on some sort of system like Amazon's Mechanical Turk. Unfortunately due to the circular nature of the problem there is no way to verify the accuracy of these labels. Much of the previous work in this field revolved around the David-Skene Estimator \cite{dawid1979maximum}. The Dawid-Skene estimator has been widely used for inferring the true labels from the noisy labels provided by non-expert crowdsourcing workers. However, since the estimator maximizes a non-convex log-likelihood function, it is hard to theoretically justify its performance. Moreover the iterative nature of EM gives no bound on the speed of convergence.  Recent work by Zhang et al. \cite{zhang2014spectral} presents a new spectral method for ground truth label generation by using spectral methods to estimate the confusion matrix for the labelers, and provides a good theoretical bound on the rate of convergence. In fact in the papers results section, it claims it reaches very close to a global optimum in one iterate of EM. For the sake of simplicity we will consider only the two class classification case, the generalization to k classes is quite natural.
+    Many machine learning algorithms rely on having accurate ground truth for complex data sets. These ``ground truth" labels are usually delegated to humans on a system such as Amazon Mechanical Turk. Unfortunately, without ground truth labels, it is difficult to analyze the accuracy of human labels, which in turn increases the difficulty of obtaining the labels. Due to the circular nature of this problem, there is no direct way to verify the accuracy of these labels. Much of the previous work in this field revolves around the David-Skene Estimator \cite{dawid1979maximum}. The Dawid-Skene estimator has been widely used for inferring the true labels from the noisy labels provided by non-expert crowdsourcing workers. However, since the estimator maximizes a non-convex log-likelihood function, it is hard to theoretically justify its performance. Moreover, the iterative nature of EM provides no bound on the speed of convergence.  Recent work by Zhang et al. \cite{zhang2014spectral} presents a new spectral method for ground truth label generation by using spectral methods to estimate the confusion matrix for the labelers, and provides a theoretical bound on the rate of convergence. In fact, the paper claims this method reaches very close to a global optimum in just one iterate of EM. For the sake of simplicity, we will consider only the two class classification case; the generalization to $k$ classes is natural.
 
 \subsection{Problem Statement}
-Consider an experiment where $M$ labelers assign labels to $N$ samples from the set: $\left\{[0,1],[1,0]\right\}$ (negative,positive). I will refer to these vectors as $N$ and $P$ respectively. Note though our labels represent scalars we represent them by the standard basis vectors of $\mathcal{R}^{2}$. This will simplify our later analysis. We will denote labeler $m$'s label of sample $n$ as $z_{mn}$. 
-
+Consider an experiment where $M$ labelers assign labels to $N$ samples from the set: $\left\{[0,1],[1,0]\right\}$ (negative, positive). I will refer to these vectors as $N$ and $P$ respectively. Note that although our labels represent scalars, we represent them by the standard basis vectors of $\mathcal{R}^{2}$. This will simplify our later analysis. We will denote labeler $m$'s label of sample $n$ as $z_{mn}$.
 
 \subsubsection{Assumptions}
 \begin{enumerate}
 \item
 The true label $y_{i}$ of item
-$i \in \left\{0,1....N\right\} $ is assumed to be sampled from a probability
+$i \in \left\{0,1....N\right\}$ is assumed to be sampled from a probability
 distribution $p(y_{i} = 0)$ = $w_{0}$ where $w_{0}$ is the prior on label 0.
 
 We define $W$ to be a diagonal $2 \times 2$ matrix:
@@ -28,14 +27,14 @@ $$p(z_{ij} = X | y_{j} = X)p(z_{hj} = X | y_{j} = X) = p(z_{ij}z_{hj} | y_{j} = 
 
 Where $i \neq h$.
 
-Though this assumption may not hold for all instances of the labelling problem, it greatly simplifies our solution. We also assume that the vendors are more likely to get a sample correct than incorrect. We also assume every labeler labels every datapoint once.
+Though this assumption may not hold for all instances of the labelling problem, it greatly simplifies our solution. We also assume that the vendors are more likely to get a sample correct than incorrect, and that every labeler labels every datapoint once.
 
 \item
-Finally we assume each worker is associated with a $2 \times 2$ confusion matrix. Where $(l,c)$-th entry represents $P(\text{Worker Label} = l| \text{True Label} = c)$. We will denote the confusion matrix for worker $j$ as  $C_{j}$.
+    Finally we assume each worker is associated with a $(2 \times 2)$ confusion matrix. Where $(l,c)$-th entry represents $P(\text{Worker Label} = l| \text{True Label} = c)$. We will denote the confusion matrix for worker $j$ as  $C_{j}$.
 
 \end{enumerate}
 
-Now what we want is to estimate $y_{i}$ for all $i \in \left\{0,1....N\right\}$. And estimate $C_{j}$ for all $j \in \left\{0,1....M\right\}$. 
+Now what we want is to estimate $y_{i}$ for all $i \in \left\{0,1....N\right\}$. And estimate $C_{j}$ for all $j \in \left\{0,1....M\right\}$.
 We would also like to estimate $W_{0}$ and $W_{1}$
 
 \subsection{Dawid-Skene Estimator}
@@ -57,14 +56,13 @@ We want: \\
 \end{equation}
 
 Unfortunately we don't know $y_{n}$ so we can't directly solve this optimization problem.
-So instead we opt for an iterative algorithm with some nice theoretical guarentees. 
+So instead we opt for an iterative algorithm with some nice theoretical guarantees.
 
-
-The intuition is quite simple. There two unknown quantities of interest: $y$ and $\theta$.
-Given one the other is computable in some manner. So we will hold one of the two nknowns constant,
-and compute the other. We will then hold the other unknown constant and repeat until convergence.
-
-This algorithm is called the Expectation Maximization (EM) algorithm.
+The intuition is quite simple. There two unknown quantities of interest: $y$
+and $\theta$.  Given one, the other is computable in some manner. So we will
+hold one of the two unknowns constant, and compute the other. We will then hold
+the other unknown constant and repeat until convergence. This algorithm is
+called the Expectation Maximization (EM) algorithm.
 
 \subsection{Expectation Maximization Algorithm}
 
@@ -75,15 +73,14 @@ conditional expectation.
     \mathcal{L'}(\theta) = \E_{y | z, \theta^{(t)}}[L(\theta)]
 \end{equation}
 
-Where $\theta^{(t)}$ is the estimate of $\theta$ at timestep $t$. This step allows us to compute $y$ from a partiulcar 
-$\theta^{(t)}$.
+Where $\theta^{(t)}$ is the estimate of $\theta$ at timestep $t$. This step
+allows us to compute $y$ from a partiulcar $\theta^{(t)}$.
 
-Next we solve
+Next, we solve
 
 \begin{equation} \label{eq:maxL'}
     \theta^{(t+1)} = \argmax_{\theta} \mathcal{L'}(\theta)
 \end{equation}
-
 
 \begin{enumerate}
     \item Pick some initial estimates for the unknown $y$ call these $y^{(0)}$
@@ -92,10 +89,12 @@ Next we solve
     \item Repeat steps 2 and 3 until convergence
 \end{enumerate}
 
-As it turns out this algorithm is not only simple but has some nice theoretical guarentees.
+As it turns out, this algorithm is not only simple, but also has some nice
+theoretical guarantees.
 
 \subsubsection{Analysis of EM}
-Much of this analysis was borrowed from \cite{murphy2012machine}. The Liklihood of the observed data is:
+Much of this analysis was borrowed from \cite{murphy2012machine}. The likelihood
+of the observed data is:
 
 \begin{equation}  \label{eq:observedL}
 \mathcal{L}_{d}(\theta) =
@@ -103,7 +102,10 @@ Much of this analysis was borrowed from \cite{murphy2012machine}. The Liklihood 
 w_{l} \displaystyle\prod\limits_{m=0}^{M} \displaystyle\prod\limits_{l=0}^{1} (C_{m}[l,c])^{z_{mn}[l]} \Big )^{y_{n}[c]}
 \end{equation}
 
-Unfortunately this is very hard to optimize which is why we took an expectation of \eqref{eq:L}. This is the function we really can with the data we are given. We will prove that the expectation we took is a lowerbound for this function.
+Unfortunately, this is very hard to optimize, which is why we took an
+expectation of \eqref{eq:L}. This is the function we can optimize with the data
+we are given. We will prove that the expectation we took is a lower bound for
+this function.
 
 \newpage
 \begin{theorem}
@@ -114,15 +116,14 @@ $$ \mathcal{L}_{d}(\theta) \geq E[\mathcal{L}_{d}(\theta)]$$
 
 Let $q(y_{i})$ be the (unknown) distribution over $y_{i}$.
 
-For simplicity's sake we will make the following defintion:
+For simplicity's sake we will make the following definition:
 
 \begin{equation} \label{eq:przyn}
 p(z,y_{n}|\theta) :=
 \Big (w_{l} \displaystyle\prod\limits_{m=0}^{M} \displaystyle\prod\limits_{l=0}^{1} (C_{m}[l,c])^{z_{mn}[l]} \Big )^{y_{n}[c]}
 \end{equation}
 
-
-First we will take a log of of \eqref{eq:observedL}
+First we will take the logarithm of \eqref{eq:observedL}
 
 \begin{equation}
 \log (\theta) = \displaystyle\sum\limits_{n=0}^{N} \log
@@ -130,18 +131,18 @@ First we will take a log of of \eqref{eq:observedL}
 \Big (w_{l} \displaystyle\prod\limits_{m=0}^{M} \displaystyle\prod\limits_{l=0}^{1} (C_{m}[l,c])^{z_{mn}[l]} \Big )^{y_{n}[c]}
 \end{equation}
 
-Now plug in \eqref{eq:przyn}
+Plugging in \eqref{eq:przyn}
 \begin{equation} \label{eq:lll}
 \log \mathcal{L}_{d}(\theta) = \displaystyle\sum\limits_{n=0}^{N} \log \displaystyle\sum\limits_{y_{n}} p(z,y_{n} | \theta)
 \end{equation}
 
-Now multiply by $\frac{q(y_{n})}{q(y_{n})}$
+Now, multiply by $\frac{q(y_{n})}{q(y_{n})}$
 
 \begin{equation}
 \log \mathcal{L}_{d}(\theta) = \displaystyle\sum\limits_{n=0}^{N} \log \Big ( \displaystyle\sum\limits_{y_{n}} q(y_{n})\frac{p(z,y_{n} | \theta)}{q(y_{n})} \Big )
 \end{equation}
 
-log is concave By jensens now we get a lower bound
+The logarithm function is concave, so by Jensen's, we now obtain a lower bound
 \begin{equation}\label{eq:jensens}
 \log \mathcal{L}_{d}(\theta) \geq
 \displaystyle\sum\limits_{n=0}^{N} \Big ( \displaystyle\sum\limits_{y_{n}}^{1} q(y_{n})\log \frac{p(z,y_{n} | \theta)}{q(y_{n})} \Big )
@@ -152,17 +153,18 @@ Now we will simplify and upper bound the inner sum to show that we have a true u
 \displaystyle\sum\limits_{y_{n}} q(y_{n}) \log \frac{p(z,y_{n}| \theta)}{q_{i}}
 \end{equation}
 
-\begin{equation} 
-\displaystyle\sum\limits_{y_{n}} q(y_{n}) \log \frac{p(y_{i}|z,\theta)p(z| \theta)}{q_{i}} 
+\begin{equation}
+\displaystyle\sum\limits_{y_{n}} q(y_{n}) \log \frac{p(y_{i}|z,\theta)p(z| \theta)}{q_{i}}
 \end{equation}
 
 \begin{equation}
 -\mathcal{KL}(q(y_{n}) || p(y_{n} | z, \theta) + \log p(z| \theta)
 \end{equation}
 
-We want to saturate the lower bound and we can do so by setting $q(y_{n}) = p(y_{n} | x_{i}, \theta)$ This makes our KL divergence 0
-
+We want to saturate the lower bound, and we can do so by setting
+$q(y_{n}) = p(y_{n} | x_{i}, \theta)$. This makes our KL divergence 0,
 and we can now plug in this into the rhs \eqref{eq:jensens} to get
+
 \begin{equation}
 \displaystyle\sum\limits_{n=0}^{N} \log p(z | \theta)
 \end{equation}
@@ -179,35 +181,38 @@ Which is exactly equal to \eqref{eq:lll}. Thus the highest our lower bound term 
 
 \end{theorem}
 
-This theorem is nice because it means the expectation function we are maximizing gives us nice lower bound on the true likelihood.
+This theorem is useful as it means the expectation function we are maximizing
+gives us a lower bound on the true likelihood.
 
-
-I will also state another theorem but not prove it. This can be verified quite easily using the previous theorem
+I will also state another theorem but not prove it. This can be verified quite
+easily using the previous theorem
 
 \begin{theorem}
 \emph{EM monotonically increases the observed data log likelihood}
 \end{theorem}
 
-
-Now a big problem with EM is the non convexity of the likelihood function we are optimizing, thus we have little guarentees on whether we are at a local or global maxima. Recent work by Zhang et al, promises a statistically optimal initilization of the EM algorithm for the labeling problem previously mentioned using some spectral methods.
+Now, a major issue with EM is the non convexity of the likelihood function we
+are optimizing. Thus, we have little guarantees on whether we are at a local or
+global maxima. Recent work by Zhang et al, promises a statistically optimal
+initialization of the EM algorithm for the labeling problem previously mentioned
+using some spectral methods.
 
 \subsection{Spectral Initialization}
 
-We will try and estimate the confusion matrix for each of the labellers. The guarentee is our estimated confusion matrix should be ``close" to the true confusion matrix, thus when we iterate on EM we will get to the optimum confusion matrices for our labellers.
+We will try and estimate the confusion matrix for each of the labelers. The
+guarantee is our estimated confusion matrix should be ``close" to the true
+confusion matrix, so that when we iterate on EM we will quickly converge to the
+optimum confusion matrices for our labelers.
 
-For the rest of this survey we will us $[n]$ to denote the set $\left\{1......n\right\}$
-
-The high level overview of this as follows:
+The high level overview of this is as follows:
 
 \begin{enumerate}
 \item Partition workers into three disjoint non empty groups $G_{1},G_{2}, G_{3}$
 \item Use method of moments to estimate average confusion matrices for the three groups.
-\item Use iterated expectation and independence assumption to acquire confusion matrix for each labeller
+\item Use iterated expectation and independence assumption to acquire confusion matrix for each labeler
 \end{enumerate}
 
-Lets dive in.
-
-We will denote confusion matrix column $l$ for labeller $m$ as $\mu_{ml}$
+We will denote confusion matrix column $l$ for labeler $m$ as $\mu_{ml}$
 
 For each group we will calculate the average label for sample $n$, $g \in [3]$:
 
@@ -216,7 +221,7 @@ Z_{gn} = \frac{1}{|G_{g}|} \displaystyle\sum\limits\sum_{i \in G_{g}} z_{in}
 \end{equation}
 
 
-We will denote teh average confusion matrix columns by 
+We will denote the average confusion matrix columns by
 \begin{equation}
 \mu^{\diamond}_{gl} := \E(Z_{gn} | y_{n} = l) = \frac{1}{G_{g}} \displaystyle\sum\limits_{i \in G_{g}} \mu_{il}
 \end{equation}
@@ -228,7 +233,7 @@ C^{\diamond}_{g} := [\mu^{\diamond}_{g0},\mu^{\diamond}_{g1}]
 
 We will attempt to solve for $C^{\diamond}_{g}$ from the moments of $Z_{gn}$
 
-Before we do that, we can motivate this approach by showing its easy to acquire $C_{m}$ for all $m \in [M]$  given $C^{\diamond}_{1},C^{\diamond}_{2},C^{\diamond}_{3}$ 
+Before we do that, we can motivate this approach by showing its easy to acquire $C_{m}$ for all $m \in [M]$  given $C^{\diamond}_{1},C^{\diamond}_{2},C^{\diamond}_{3}$
 
 
 \begin{lemma}
@@ -264,12 +269,14 @@ $p(Z_{cj} = i, Z_{bj} = k, Z_{aj} = l),  = E[Z_{cj} \otimes Z_{bj} \otimes Z_{aj
 Where $E[Z_{cj} \otimes Z_{bj}]$ is a $2 \times 2$ matrix. And $E[Z_{cj} \otimes Z_{bj} \otimes Z_{aj}]$ is a $2 \time 2 \times 2$ tensor. (Here I'm using the term tensor as an n-dimensional generalization of a matrix).
 \end{lemma}
 
-Unfortunatel because the condition probabilities of our groups are not going to be the same, our matrices nor tensors will be symmmetric.
+Unfortunately, because the condition probabilities of our groups are not going
+to be the same, neither our matrices nor our tensors will be symmetric.
 
-Much of the averaged confusion matrix generation hinges on tensor factorization. Tensor factorization is much more difficult than matrix factorization, and cannot be applied to all tensors. In particular we will need our tensor to be whitened and symmetric. So the following "diagnalizes" our moment matrix.
-
-
-
+Much of the averaged confusion matrix generation hinges on tensor
+factorization. Tensor factorization is much more difficult than matrix
+factorization, and cannot be applied to all tensors. In particular we will need
+our tensor to be whitened and symmetric. So the following "diagonalizes" our
+moment matrix.
 
 \begin{theorem}
 Assume that the columns of our confusion matrix are linearly indpendent. Let $(a,b,c)$ be a permutation of $[3]$.
@@ -286,7 +293,7 @@ $$M_{3} = \displaystyle\sum\limits_{l=1}^{k} w_{l}\mu^{\diamond}_{cl} \otimes \m
 
 This theorem is extremely powerful for two reasons:
 
-\begin{enumerate} 
+\begin{enumerate}
 \item The expectations are very easy to compute empirically from our data, so we can easily compute $M_{2}$ and $M_{3}$
 \item We can use all 3 permutations of $[3]$ to generate the moment matrices and tensors for all three of our groups.
 \item Our resulting structures are symmetric so now we can apply a tensor factorization algorithm to recover the columns of $C^{\diamond}_{g}$
@@ -294,18 +301,18 @@ This theorem is extremely powerful for two reasons:
 
 So now that we have the moments for our groups, we can employ a tensor factorization algorithm such as the one discussed in \cite{anandkumar2014tensor} to recover the columns of our confusion matrix, and the corresponding entries of $W$
 
-There is one complication in that the tensor decomposition algorithm only gives us the columns that make up the original matrix but not the order of the columns. But if we make an assumption that all the labellers have a good true positive rate, we can disambiguate this by setting the index of the column to be the index of the column \textit{entry} with the highest value. If there is a collision for an index, we can break the tie by picking the one with the higher value in that slot. Again this process is greatly simplified by the fact that we only have 2 columns in each confusion matrix. 
+There is one complication in that the tensor decomposition algorithm only gives us the columns that make up the original matrix but not the order of the columns. But, if we make an assumption that all the labelers have a ``good" ($>50\%$) true positive rate, we can disambiguate this by setting the index of the column to be the index of the column \textit{entry} with the highest value. If there is a collision for an index, we can break the tie by picking the one with the higher value in that slot. Again, this process is greatly simplified by the fact that we only have 2 columns in each confusion matrix.
 
-Finally with our averaged confusion matrices we can acquire the confusion matric for each of the labellers, and we have completed our EM initialization.
+Finally with our averaged confusion matrices we can acquire the confusion matrix for each of the labelers, and we have completed our EM initialization.
 
-Our initialization has a very nice theoretical property in that its close to the true confusion matrix for each labeller. Let us define some metrics so we can make this notion precise:
+Our initialization has a very nice theoretical property in that it is close to the true confusion matrix for each labeler. Let us define some metrics so we can make this notion precise:
 
 $$ w_{min} := min(w_{0}, w_{1}) $$
 This will be the smallest portion of true labels. We assume that this value is strictly positive.
 
 $$ \kappa := \min_{g \in [3]} \min_{l \in \left\{0,1\right\}} \min_{j \in \left\{0,1\right\}\backslash l}  \mu^{\diamond}_{gll} - \mu^{\diamond}_{glc}$$
 
-$\kappa$ denotes the smallest gap between diagnol entries and non-diagnol entries in the confusion matrix. The assumption requires that $\kappa$ is strictly positive.
+$\kappa$ denotes the smallest gap between diagonal entries and non-diagonal entries in the confusion matrix. The assumption requires that $\kappa$ is strictly positive.
 
 $$D_{KL} := \displaystyle\sum\limits_{i=0} p(i)\log(\frac{p(i)}{q(i)}) $$
 
@@ -313,23 +320,22 @@ $$\bar{D} := \min_{l \neq l'} \frac{1}{m} \displaystyle_{i=1}^{m} \mathcal{D}_{K
 
 Let $\sigma_{L}$ be a scalar that is greater than the smallest eigenvalue of our moment matrix (between a and b).
 
-The quantity $\bar{D}$ lower bounds the averaged KL-divergence between two columns If $\bar{D}$ is strictly positive it means that every pair of labels can be distinguished by atleast one subset of wrokers.
+The quantity $\bar{D}$ lower bounds the averaged KL-divergence between two columns If $\bar{D}$ is strictly positive it means that every pair of labels can be distinguished by at least one subset of workers.
 
 
 \begin{theorem}
-For any scalar $\delta > 0$ and any scalar $\epsilon$ satisfying $\epsilon\leq min(\frac{72\kappa}{w_{min}\sigma_{l}, 2})$ if the number of 
+For any scalar $\delta > 0$ and any scalar $\epsilon$ satisfying $\epsilon\leq min(\frac{72\kappa}{w_{min}\sigma_{l}, 2})$ if the number of
 items n satisfies $ n = \Omega\Big ( \frac{(32\log((m + 2){\delta})}{\epsilon^{2}\omega^{2}\sigma_{L}^{13}} \Big ) $
 
 Then the confusion matrices returned by our initialization is bounded as
 
 $$ ||\hat{C_{i}} - C_{i}||_{\infty}  < \epsilon \text{for all} \; i \in  [m] $$
 
-The proof for this theorem is very long, and full of computations, bounding and algebra. It can be found in \cite{zhang2014spectral}
+The proof for this theorem is rather long, and requires extensive computations,
+bounding and algebra. It is omitted for brevity and clarity, but can be found
+in \cite{zhang2014spectral}.
 \end{theorem}
 
-The nice result about this theorem is that we are hurt by the nonconvexity of the EM algorithm less now. Since for a large $n$ we start very close to the actual maxima.
-
-
-
-
-
+The neat fact about this theorem is that the non-convexity of the EM algorithm
+does not impact us, as for large $n$ we start very close to the actual
+maxima.
