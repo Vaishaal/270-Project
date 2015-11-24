@@ -1,6 +1,6 @@
 # CS 270 Course Survey
 
-This is a repository for a survey submitted as the final ``project" for
+This is a repository for a survey submitted as the final "project" for
 [CS 270](http://www.cse.cuhk.edu.hk/~chi/cs270/): Combinatorial Algorithms and
 Data Structures.
 
